@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:movie_rating/model/movie.dart';
 import '../const/endpoints.dart';
@@ -7,9 +6,13 @@ import '../const/endpoints.dart';
 class MovieService {
   final String _baseUrl = Endpoints.baseUrl;
 
-  Future<PopularMovieResponse> fetchPopularMovies() async {
+  Future<PopularMovieResponse> fetchPopularMovies({int page = 1}) async {
     try {
-      final uri = Uri.parse('$_baseUrl${Endpoints.popularMovies}');
+      final uri = Uri.parse('$_baseUrl${Endpoints.popularMovies}').replace(
+        queryParameters: {
+          'page': '$page',
+        },
+      );
 
       final headers = {
         'Authorization': 'Bearer ${Endpoints.accessToken}',
@@ -22,7 +25,6 @@ class MovieService {
 
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
-        final List results = decoded['results'];
 
         return PopularMovieResponse.fromJson(decoded);
       } else {

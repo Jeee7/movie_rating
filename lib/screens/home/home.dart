@@ -7,6 +7,7 @@ import 'package:movie_rating/const/custom_colors.dart';
 import 'package:movie_rating/const/divider.dart';
 import 'package:movie_rating/const/endpoints.dart';
 import 'package:movie_rating/screens/home/components/movie_card.dart';
+import 'package:movie_rating/screens/home/components/popular_movie_detail.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -35,39 +36,57 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Section title
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Popular',
+                  const Text(
+                    'Popular Movies',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Text(
-                    'See More',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => BlocProvider.value(
+                            value: context.read<MovieBloc>(),
+                            child: const PopularMovieDetailPage(),
+                          ),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      'See More',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
             gapHeight(8),
-
             SizedBox(
-              height: 260,
+              height: 200,
               child: BlocBuilder<MovieBloc, MovieState>(
                 builder: (context, state) {
                   if (state is PopularMovieLoading) {
-                    return const Center(child: CircularProgressIndicator());
+                    return ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: 5,
+                      itemBuilder: (context, index) {
+                        return const MovieCard(isLoading: true);
+                      },
+                    );
                   } else if (state is PopularMovieSuccess) {
-                    final movies = state.movies.results;
+                    final movies = state.movies;
                     return ListView.builder(
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -75,6 +94,7 @@ class HomeScreen extends StatelessWidget {
                       itemBuilder: (context, index) {
                         final movie = movies[index];
                         return MovieCard(
+                          isLoading: state is PopularMovieLoading,
                           title: movie.title,
                           imageUrl:
                               '${Endpoints.imageBaseUrl}${movie.posterPath}',
@@ -93,7 +113,7 @@ class HomeScreen extends StatelessWidget {
                     );
                   }
 
-                  return const SizedBox(); // Fallback initial state
+                  return const SizedBox();
                 },
               ),
             ),
