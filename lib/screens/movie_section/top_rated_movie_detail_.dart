@@ -1,13 +1,19 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movie_rating/bloc/movie_bloc/movie_event.dart';
 import 'package:movie_rating/bloc/movie_bloc/movie_state.dart';
 import 'package:movie_rating/bloc/movie_bloc/top_rated_movie_bloc.dart';
+import 'package:movie_rating/bloc/search_bloc/search_bloc.dart';
+import 'package:movie_rating/bloc/search_bloc/search_event.dart';
+import 'package:movie_rating/bloc/search_bloc/search_state.dart';
 import 'package:movie_rating/const/custom_colors.dart';
 import 'package:movie_rating/const/endpoints.dart';
 import 'package:movie_rating/model/movie.dart';
-import 'package:movie_rating/screens/movie_section/movie_card.dart';
+import 'package:movie_rating/screens/movie_section/components/movie_card.dart';
+import 'package:movie_rating/utils/search_input.dart';
 
 class TopRatedMovieDetail extends StatefulWidget {
   const TopRatedMovieDetail({super.key});
@@ -19,16 +25,38 @@ class TopRatedMovieDetail extends StatefulWidget {
 class _TopRatedMovieDetailState extends State<TopRatedMovieDetail> {
   final ScrollController _scrollController = ScrollController();
 
+  String _searchQuery = '';
+  late final SearchMovieBloc _searchMovieBloc;
+
+  Timer? _debounce;
+
   @override
   void initState() {
     super.initState();
     context.read<TopRatedMovieBloc>().add(FetchTopRatedMovies());
-
+    _searchMovieBloc = context.read<SearchMovieBloc>();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >=
           _scrollController.position.maxScrollExtent - 300) {
-        context.read<TopRatedMovieBloc>().add(FetchTopRatedMoviesNextPage());
+        if (_searchQuery.isEmpty) {
+          context.read<TopRatedMovieBloc>().add(FetchPopularMoviesNextPage());
+        } else {
+          final state = context.read<SearchMovieBloc>().state;
+          if (state is SearchMovieSuccess && !state.hasReachedMax) {
+            // context.read<SearchMovieBloc>().add(SearchMovieFetchMore());
+          }
+        }
       }
+    });
+  }
+
+  void _onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      setState(() {
+        _searchQuery = query;
+      });
+      context.read<SearchMovieBloc>().add(SearchMovie(query: query));
     });
   }
 
@@ -36,6 +64,7 @@ class _TopRatedMovieDetailState extends State<TopRatedMovieDetail> {
   void dispose() {
     _scrollController.dispose();
     super.dispose();
+    _debounce?.cancel();
   }
 
   @override
@@ -50,48 +79,103 @@ class _TopRatedMovieDetailState extends State<TopRatedMovieDetail> {
       ),
     );
 
-    return Scaffold(
-      backgroundColor: colors.background,
-      appBar: AppBar(
+    return BlocProvider.value(
+      value: _searchMovieBloc,
+      child: Scaffold(
         backgroundColor: colors.background,
-        title: const Text(
-          "Top Rated Movies",
+        appBar: AppBar(
+          backgroundColor: colors.background,
+          title: const Text("Top Rated Movies"),
+        ),
+        body: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: SearchField(
+                onChanged: _onSearchChanged,
+              ),
+            ),
+            Expanded(
+              child: _searchQuery.isEmpty
+                  ? _buildTopRatedMovie()
+                  : _buildSearchMovieList(),
+            ),
+          ],
         ),
       ),
-      body: BlocBuilder<TopRatedMovieBloc, MovieState>(
-        builder: (context, state) {
-          if (state is TopRatedMovieLoading && state.movies.isEmpty) {
-            return GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                childAspectRatio: 0.55,
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: 12,
-              itemBuilder: (context, index) {
-                return const MovieCard(isLoading: true);
-              },
-            );
-          } else if (state is TopRatedMovieError) {
-            return Center(
-              child: Text(
-                "Error: ${state.message}",
-              ),
-            );
-          } else if (state is TopRatedMovieSuccess) {
-            final movies = state.movies;
-            return _buildMovieGrid(movies);
-          } else if (state is TopRatedMovieLoading) {
-            final movies = state.movies;
-            return _buildMovieGrid(
-              movies,
-              isLoading: true,
-            );
-          } else {
-            return const SizedBox();
+    );
+  }
+
+  Widget _buildTopRatedMovie() {
+    return BlocBuilder<TopRatedMovieBloc, MovieState>(
+      builder: (context, state) {
+        if (state is TopRatedMovieLoading && state.movies.isEmpty) {
+          return GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              childAspectRatio: 0.55,
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: 12,
+            itemBuilder: (context, index) {
+              return const MovieCard(isLoading: true);
+            },
+          );
+        } else if (state is TopRatedMovieError) {
+          return Center(
+            child: Text(
+              "Error: ${state.message}",
+            ),
+          );
+        } else if (state is TopRatedMovieSuccess) {
+          final movies = state.movies;
+          return _buildMovieGrid(movies);
+        } else if (state is TopRatedMovieLoading) {
+          final movies = state.movies;
+          return _buildMovieGrid(
+            movies,
+            isLoading: true,
+          );
+        } else {
+          return const SizedBox();
+        }
+      },
+    );
+  }
+
+  Widget _buildSearchMovieList() {
+    return BlocBuilder<SearchMovieBloc, SearchMovieState>(
+      builder: (context, state) {
+        if (state is SearchMovieLoading) {
+          return _buildLoadingGrid();
+        } else if (state is SearchMovieError) {
+          return Center(child: Text("Error: ${state.message}"));
+        } else if (state is SearchMovieSuccess) {
+          final movies = state.movies;
+          if (movies.isEmpty) {
+            return const Center(child: Text("No results found."));
           }
-        },
+          return _buildMovieGrid(
+            movies,
+          );
+        } else {
+          return const SizedBox();
+        }
+      },
+    );
+  }
+
+  Widget _buildLoadingGrid() {
+    return GridView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        childAspectRatio: 0.5,
       ),
+      itemCount: 12,
+      itemBuilder: (context, index) {
+        return const MovieCard(isLoading: true);
+      },
     );
   }
 
@@ -111,10 +195,11 @@ class _TopRatedMovieDetailState extends State<TopRatedMovieDetail> {
 
         final movie = movies[index];
         final title = movie.title;
-        final string = movie.posterPath;
+        final imageUrl = '${Endpoints.imageBaseUrl}${movie.posterPath}';
+
         return MovieCard(
           title: title,
-          imageUrl: '${Endpoints.imageBaseUrl}$string',
+          imageUrl: imageUrl,
         );
       },
     );

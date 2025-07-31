@@ -5,11 +5,13 @@ class MovieCard extends StatelessWidget {
   final String? title;
   final String? imageUrl;
   final bool isLoading;
+  final VoidCallback? onTap;
 
   const MovieCard({
     this.title,
     this.imageUrl,
     this.isLoading = false,
+    this.onTap,
     super.key,
   });
 
@@ -34,41 +36,31 @@ class MovieCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              // const SizedBox(height: 8),
-              // Container(
-              //   height: 16,
-              //   width: 100,
-              //   color: Colors.grey,
-              // ),
             ],
           ),
         ),
       );
     }
 
-    return Container(
-      width: 140,
-      margin: const EdgeInsets.symmetric(horizontal: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.network(
-              imageUrl!,
-              height: 200,
-              width: 140,
-              fit: BoxFit.fill,
+    return GestureDetector(
+      onTap: onTap, // ⬅️ Gunakan callback
+      child: Container(
+        width: 140,
+        margin: const EdgeInsets.symmetric(horizontal: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.network(
+                imageUrl!,
+                height: 200,
+                width: 140,
+                fit: BoxFit.fill,
+              ),
             ),
-          ),
-          // gapHeight(8),
-          // Text(
-          //   title!,
-          //   maxLines: 2,
-          //   overflow: TextOverflow.ellipsis,
-          //   style: Theme.of(context).textTheme.bodyMedium,
-          // ),
-        ],
+          ],
+        ),
       ),
     );
   }

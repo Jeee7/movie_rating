@@ -6,7 +6,8 @@ import 'package:movie_rating/bloc/movie_bloc/movie_state.dart';
 import 'package:movie_rating/bloc/search_bloc/search_bloc.dart';
 import 'package:movie_rating/const/divider.dart';
 import 'package:movie_rating/const/endpoints.dart';
-import 'package:movie_rating/screens/movie_section/movie_card.dart';
+import 'package:movie_rating/screens/movie_section/components/bottom_sheet_info.dart';
+import 'package:movie_rating/screens/movie_section/components/movie_card.dart';
 import 'package:movie_rating/screens/movie_section/popular_movie_detail.dart';
 
 class PopularMovieList extends StatefulWidget {
@@ -97,6 +98,9 @@ class _PopularMovieListState extends State<PopularMovieList> {
                       isLoading: false,
                       title: movie.title,
                       imageUrl: '${Endpoints.imageBaseUrl}${movie.posterPath}',
+                      onTap: () {
+                        BottomSheetInfo.show(context, movie);
+                      },
                     );
                   },
                 );

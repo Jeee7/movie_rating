@@ -6,7 +6,7 @@ import 'package:movie_rating/bloc/movie_bloc/movie_event.dart';
 import 'package:movie_rating/bloc/movie_bloc/movie_state.dart';
 import 'package:movie_rating/const/divider.dart';
 import 'package:movie_rating/const/endpoints.dart';
-import 'package:movie_rating/screens/movie_section/movie_card.dart';
+import 'package:movie_rating/screens/movie_section/components/movie_card.dart';
 
 class NowShowingMovie extends StatefulWidget {
   const NowShowingMovie({super.key});

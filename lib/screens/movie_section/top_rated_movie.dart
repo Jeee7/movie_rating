@@ -3,9 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movie_rating/bloc/movie_bloc/movie_event.dart';
 import 'package:movie_rating/bloc/movie_bloc/movie_state.dart';
 import 'package:movie_rating/bloc/movie_bloc/top_rated_movie_bloc.dart';
+import 'package:movie_rating/bloc/search_bloc/search_bloc.dart';
 import 'package:movie_rating/const/divider.dart';
 import 'package:movie_rating/const/endpoints.dart';
-import 'package:movie_rating/screens/movie_section/movie_card.dart';
+import 'package:movie_rating/screens/movie_section/components/bottom_sheet_info.dart';
+import 'package:movie_rating/screens/movie_section/components/movie_card.dart';
+import 'package:movie_rating/screens/movie_section/top_rated_movie_detail_.dart';
 
 class TopRatedMovieList extends StatefulWidget {
   const TopRatedMovieList({super.key});
@@ -41,15 +44,22 @@ class _TopRatedMovieListState extends State<TopRatedMovieList> {
               ),
               InkWell(
                 onTap: () {
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //     builder: (_) => BlocProvider.value(
-                  //       value: context.read<MovieBloc>(),
-                  //       child: const PopularMovieDetailPage(),
-                  //     ),
-                  //   ),
-                  // );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => MultiBlocProvider(
+                        providers: [
+                          BlocProvider.value(
+                            value: context.read<TopRatedMovieBloc>(),
+                          ),
+                          BlocProvider.value(
+                            value: context.read<SearchMovieBloc>(),
+                          ),
+                        ],
+                        child: const TopRatedMovieDetail(),
+                      ),
+                    ),
+                  );
                 },
                 child: const Text(
                   'See More',
@@ -88,6 +98,9 @@ class _TopRatedMovieListState extends State<TopRatedMovieList> {
                       isLoading: false,
                       title: movie.title,
                       imageUrl: '${Endpoints.imageBaseUrl}${movie.posterPath}',
+                      onTap: () {
+                        BottomSheetInfo.show(context, movie);
+                      },
                     );
                   },
                 );

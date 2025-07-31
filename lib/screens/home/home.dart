@@ -12,6 +12,7 @@ import 'package:movie_rating/screens/movie_section/now_showing_movie.dart';
 import 'package:movie_rating/screens/movie_section/popular_movie_list.dart';
 import 'package:movie_rating/screens/movie_section/top_rated_movie.dart';
 import 'package:movie_rating/screens/movie_section/upcoming_movie_list.dart';
+import 'package:movie_rating/screens/movie_section/watchlist.dart';
 import 'package:movie_rating/services/movie_services.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -66,6 +67,8 @@ class HomeScreen extends StatelessWidget {
               const NowShowingMovie(),
               gapHeight(16),
               const UpcomingMovieList(),
+              gapHeight(16),
+              const WatchlistSection(),
             ],
           ),
         ),

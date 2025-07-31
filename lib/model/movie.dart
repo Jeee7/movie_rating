@@ -1,3 +1,6 @@
+import 'package:hive/hive.dart';
+part 'movie.g.dart';
+
 class PopularMovieResponse {
   final int page;
   final List<MovieItem> results;
@@ -22,20 +25,48 @@ class PopularMovieResponse {
   }
 }
 
-class MovieItem {
+@HiveType(typeId: 0) // typeId HARUS unik dalam project Hive-mu
+class MovieItem extends HiveObject {
+  @HiveField(0)
   final int id;
+
+  @HiveField(1)
   final String title;
+
+  @HiveField(2)
   final String overview;
+
+  @HiveField(3)
   final String? posterPath;
+
+  @HiveField(4)
   final String? backdropPath;
+
+  @HiveField(5)
   final String releaseDate;
+
+  @HiveField(6)
   final double voteAverage;
+
+  @HiveField(7)
   final int voteCount;
+
+  @HiveField(8)
   final bool adult;
+
+  @HiveField(9)
   final bool video;
+
+  @HiveField(10)
   final List<int> genreIds;
+
+  @HiveField(11)
   final String originalTitle;
+
+  @HiveField(12)
   final String originalLanguage;
+
+  @HiveField(13)
   final double popularity;
 
   MovieItem({

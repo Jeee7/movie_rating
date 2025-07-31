@@ -12,8 +12,7 @@ import 'package:movie_rating/bloc/search_bloc/search_state.dart';
 import 'package:movie_rating/const/custom_colors.dart';
 import 'package:movie_rating/const/endpoints.dart';
 import 'package:movie_rating/model/movie.dart';
-import 'package:movie_rating/screens/movie_section/movie_card.dart';
-import 'package:movie_rating/services/movie_services.dart';
+import 'package:movie_rating/screens/movie_section/components/movie_card.dart';
 import 'package:movie_rating/utils/search_input.dart';
 
 class PopularMovieDetailPage extends StatefulWidget {
