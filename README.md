@@ -30,10 +30,10 @@ You can access through DIAWI if you only wanna try the app without installing (I
 
 1. Clone The Repository:
    git clone https://github.com/Jeee7/movie_rating.git
-   cd movie_rating
+   
 
-2. Get Depedencies
-   flutter pub get
+2. Mode to Directory and Get Depedencies using
+   **flutter pub get**
 
 3. Run the app
-   flutter run
+   **flutter run**
