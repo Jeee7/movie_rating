@@ -12,6 +12,7 @@ import 'package:movie_rating/bloc/search_bloc/search_state.dart';
 import 'package:movie_rating/const/custom_colors.dart';
 import 'package:movie_rating/const/endpoints.dart';
 import 'package:movie_rating/model/movie.dart';
+import 'package:movie_rating/screens/movie_section/components/bottom_sheet_info.dart';
 import 'package:movie_rating/screens/movie_section/components/movie_card.dart';
 import 'package:movie_rating/utils/search_input.dart';
 
@@ -199,6 +200,9 @@ class _PopularMovieDetailPageState extends State<PopularMovieDetailPage> {
         return MovieCard(
           title: title,
           imageUrl: imageUrl,
+          onTap: () {
+            BottomSheetInfo.show(context, movie);
+          },
         );
       },
     );
