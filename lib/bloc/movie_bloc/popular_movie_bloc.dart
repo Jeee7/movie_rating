@@ -4,10 +4,10 @@ import 'package:movie_rating/services/movie_services.dart';
 import 'movie_event.dart';
 import 'movie_state.dart';
 
-class MovieBloc extends Bloc<MovieEvent, MovieState> {
+class PopularMovieBloc extends Bloc<MovieEvent, MovieState> {
   final MovieService _movieService;
 
-  MovieBloc(this._movieService) : super(PopularMovieInitial()) {
+  PopularMovieBloc(this._movieService) : super(PopularMovieInitial()) {
     on<FetchPopularMovies>(_onFetchPopularMovies);
     on<FetchPopularMoviesNextPage>(_onFetchPopularMoviesNextPage);
   }

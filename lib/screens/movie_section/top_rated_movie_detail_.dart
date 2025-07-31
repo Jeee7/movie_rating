@@ -1,33 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:movie_rating/bloc/movie_bloc/movie_bloc.dart';
 import 'package:movie_rating/bloc/movie_bloc/movie_event.dart';
 import 'package:movie_rating/bloc/movie_bloc/movie_state.dart';
+import 'package:movie_rating/bloc/movie_bloc/top_rated_movie_bloc.dart';
 import 'package:movie_rating/const/custom_colors.dart';
 import 'package:movie_rating/const/endpoints.dart';
 import 'package:movie_rating/model/movie.dart';
-import 'package:movie_rating/screens/home/components/movie_card.dart';
+import 'package:movie_rating/screens/movie_section/movie_card.dart';
 
-class PopularMovieDetailPage extends StatefulWidget {
-  const PopularMovieDetailPage({super.key});
+class TopRatedMovieDetail extends StatefulWidget {
+  const TopRatedMovieDetail({super.key});
 
   @override
-  State<PopularMovieDetailPage> createState() => _PopularMovieDetailPageState();
+  State<TopRatedMovieDetail> createState() => _TopRatedMovieDetailState();
 }
 
-class _PopularMovieDetailPageState extends State<PopularMovieDetailPage> {
+class _TopRatedMovieDetailState extends State<TopRatedMovieDetail> {
   final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    context.read<MovieBloc>().add(FetchPopularMovies());
+    context.read<TopRatedMovieBloc>().add(FetchTopRatedMovies());
 
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >=
           _scrollController.position.maxScrollExtent - 300) {
-        context.read<MovieBloc>().add(FetchPopularMoviesNextPage());
+        context.read<TopRatedMovieBloc>().add(FetchTopRatedMoviesNextPage());
       }
     });
   }
@@ -55,12 +55,12 @@ class _PopularMovieDetailPageState extends State<PopularMovieDetailPage> {
       appBar: AppBar(
         backgroundColor: colors.background,
         title: const Text(
-          "Popular Movies",
+          "Top Rated Movies",
         ),
       ),
-      body: BlocBuilder<MovieBloc, MovieState>(
+      body: BlocBuilder<TopRatedMovieBloc, MovieState>(
         builder: (context, state) {
-          if (state is PopularMovieLoading && state.movies.isEmpty) {
+          if (state is TopRatedMovieLoading && state.movies.isEmpty) {
             return GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
@@ -72,16 +72,16 @@ class _PopularMovieDetailPageState extends State<PopularMovieDetailPage> {
                 return const MovieCard(isLoading: true);
               },
             );
-          } else if (state is PopularMovieError) {
+          } else if (state is TopRatedMovieError) {
             return Center(
               child: Text(
                 "Error: ${state.message}",
               ),
             );
-          } else if (state is PopularMovieSuccess) {
+          } else if (state is TopRatedMovieSuccess) {
             final movies = state.movies;
             return _buildMovieGrid(movies);
-          } else if (state is PopularMovieLoading) {
+          } else if (state is TopRatedMovieLoading) {
             final movies = state.movies;
             return _buildMovieGrid(
               movies,

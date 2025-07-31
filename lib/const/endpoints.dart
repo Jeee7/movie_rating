@@ -8,6 +8,8 @@ class Endpoints {
   static const String topRated = '/movie/top_rated';
 
   static String movieDetail(int id) => '/movie/$id';
+  static String movieSearch(String query) =>
+      '/search/movie?query=$query';
 
   static const Duration durationTimeout = Duration(seconds: 10);
 

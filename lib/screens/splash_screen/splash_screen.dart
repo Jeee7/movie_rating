@@ -1,12 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:movie_rating/bloc/movie_bloc/movie_bloc.dart';
-import 'package:movie_rating/bloc/movie_bloc/movie_event.dart';
 import 'package:movie_rating/const/custom_colors.dart';
 import 'package:movie_rating/screens/home/home.dart';
-import 'package:movie_rating/services/movie_services.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -17,7 +13,6 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   double _opacity = 0.0;
-  final _movieService = MovieService();
 
   @override
   void initState() {
@@ -30,20 +25,13 @@ class _SplashScreenState extends State<SplashScreen> {
       });
     });
 
-    // Auto navigate
     Timer(
       const Duration(seconds: 2),
       () {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (_) => BlocProvider(
-              create: (_) => MovieBloc(_movieService)
-                ..add(
-                  FetchPopularMovies(),
-                ),
-              child: const HomeScreen(),
-            ),
+            builder: (_) => const HomeScreen(),
           ),
         );
       },

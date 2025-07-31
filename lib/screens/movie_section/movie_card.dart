@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:movie_rating/const/divider.dart';
 import 'package:shimmer/shimmer.dart';
 
 class MovieCard extends StatelessWidget {
