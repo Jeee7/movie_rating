@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movie_rating/bloc/movie_bloc/movie_event.dart';
 import 'package:movie_rating/bloc/movie_bloc/movie_state.dart';
-import 'package:movie_rating/bloc/movie_bloc/top_rated_movie_bloc.dart';
+import 'package:movie_rating/bloc/movie_bloc/upcoming_movie_bloc.dart';
 import 'package:movie_rating/bloc/search_bloc/search_bloc.dart';
 import 'package:movie_rating/bloc/search_bloc/search_event.dart';
 import 'package:movie_rating/bloc/search_bloc/search_state.dart';
@@ -16,14 +16,14 @@ import 'package:movie_rating/screens/movie_section/components/bottom_sheet_info.
 import 'package:movie_rating/screens/movie_section/components/movie_card.dart';
 import 'package:movie_rating/utils/search_input.dart';
 
-class TopRatedMovieDetail extends StatefulWidget {
-  const TopRatedMovieDetail({super.key});
+class UpcomingMovieDetail extends StatefulWidget {
+  const UpcomingMovieDetail({super.key});
 
   @override
-  State<TopRatedMovieDetail> createState() => _TopRatedMovieDetailState();
+  State<UpcomingMovieDetail> createState() => _UpcomingMovieDetailState();
 }
 
-class _TopRatedMovieDetailState extends State<TopRatedMovieDetail> {
+class _UpcomingMovieDetailState extends State<UpcomingMovieDetail> {
   final ScrollController _scrollController = ScrollController();
   String _searchQuery = '';
   late final SearchMovieBloc _searchMovieBloc;
@@ -33,13 +33,13 @@ class _TopRatedMovieDetailState extends State<TopRatedMovieDetail> {
   @override
   void initState() {
     super.initState();
-    context.read<TopRatedMovieBloc>().add(FetchTopRatedMovies());
+    context.read<UpcomingMovieBloc>().add(FetchUpcomingMovies());
     _searchMovieBloc = context.read<SearchMovieBloc>();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >=
           _scrollController.position.maxScrollExtent - 300) {
         if (_searchQuery.isEmpty) {
-          context.read<TopRatedMovieBloc>().add(FetchTopRatedMoviesNextPage());
+          context.read<UpcomingMovieBloc>().add(FetchUpcomingMoviesNextPage());
         } else {
           final state = context.read<SearchMovieBloc>().state;
           if (state is SearchMovieSuccess && !state.hasReachedMax) {
@@ -85,7 +85,7 @@ class _TopRatedMovieDetailState extends State<TopRatedMovieDetail> {
         backgroundColor: colors.background,
         appBar: AppBar(
           backgroundColor: colors.background,
-          title: const Text("Top Rated Movies"),
+          title: const Text("Upcoming Movies"),
         ),
         body: Column(
           children: [
@@ -97,7 +97,7 @@ class _TopRatedMovieDetailState extends State<TopRatedMovieDetail> {
             ),
             Expanded(
               child: _searchQuery.isEmpty
-                  ? _buildTopRatedMovieList()
+                  ? upcomingMovieList()
                   : _buildSearchMovieList(),
             ),
           ],
@@ -106,10 +106,10 @@ class _TopRatedMovieDetailState extends State<TopRatedMovieDetail> {
     );
   }
 
-  Widget _buildTopRatedMovieList() {
-    return BlocBuilder<TopRatedMovieBloc, MovieState>(
+  Widget upcomingMovieList() {
+    return BlocBuilder<UpcomingMovieBloc, MovieState>(
       builder: (context, state) {
-        if (state is TopRatedMovieLoading && state.movies.isEmpty) {
+        if (state is UpcomingMovieLoading && state.movies.isEmpty) {
           return GridView.builder(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,
@@ -121,16 +121,16 @@ class _TopRatedMovieDetailState extends State<TopRatedMovieDetail> {
               return const MovieCard(isLoading: true);
             },
           );
-        } else if (state is TopRatedMovieError) {
+        } else if (state is UpcomingMovieError) {
           return Center(
             child: Text(
               "Error: ${state.message}",
             ),
           );
-        } else if (state is TopRatedMovieSuccess) {
+        } else if (state is UpcomingMovieSuccess) {
           final movies = state.movies;
           return _buildMovieGrid(movies);
-        } else if (state is TopRatedMovieLoading) {
+        } else if (state is UpcomingMovieLoading) {
           final movies = state.movies;
           return _buildMovieGrid(
             movies,

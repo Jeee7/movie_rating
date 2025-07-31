@@ -16,7 +16,7 @@ class NowShowingMovieBloc extends Bloc<MovieEvent, MovieState> {
     FetchNowShowingMovies event,
     Emitter<MovieState> emit,
   ) async {
-    emit(PopularMovieLoading(movies: [], page: 1));
+    emit(NowShowingMovieLoading(movies: [], page: 1));
     try {
       final movies = await _movieService.fetchNowPlayingMovie();
       emit(NowShowingMovieSuccess(
@@ -25,7 +25,7 @@ class NowShowingMovieBloc extends Bloc<MovieEvent, MovieState> {
         hasReachedMax: movies.page >= movies.totalPages,
       ));
     } catch (e) {
-      emit(PopularMovieError(e.toString()));
+      emit(NowShowingMovieError(e.toString()));
     }
   }
 
@@ -34,7 +34,7 @@ class NowShowingMovieBloc extends Bloc<MovieEvent, MovieState> {
     Emitter<MovieState> emit,
   ) async {
     final currentState = state;
-    if (currentState is PopularMovieSuccess && !currentState.hasReachedMax) {
+    if (currentState is NowShowingMovieSuccess && !currentState.hasReachedMax) {
       try {
         final nextPage = currentState.page + 1;
         emit(NowShowingMovieLoading(
@@ -54,7 +54,7 @@ class NowShowingMovieBloc extends Bloc<MovieEvent, MovieState> {
           hasReachedMax: response.page >= response.totalPages,
         ));
       } catch (e) {
-        emit(PopularMovieError(e.toString()));
+        emit(NowShowingMovieError(e.toString()));
       }
     }
   }

@@ -3,10 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movie_rating/bloc/movie_bloc/movie_event.dart';
 import 'package:movie_rating/bloc/movie_bloc/movie_state.dart';
 import 'package:movie_rating/bloc/movie_bloc/upcoming_movie_bloc.dart';
+import 'package:movie_rating/bloc/search_bloc/search_bloc.dart';
 import 'package:movie_rating/const/divider.dart';
 import 'package:movie_rating/const/endpoints.dart';
 import 'package:movie_rating/screens/movie_section/components/bottom_sheet_info.dart';
 import 'package:movie_rating/screens/movie_section/components/movie_card.dart';
+import 'package:movie_rating/screens/movie_section/upcoming_movie_detail.dart';
 
 class UpcomingMovieList extends StatefulWidget {
   const UpcomingMovieList({super.key});
@@ -42,15 +44,22 @@ class _UpcomingMovieListState extends State<UpcomingMovieList> {
               ),
               InkWell(
                 onTap: () {
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //     builder: (_) => BlocProvider.value(
-                  //       value: context.read<UpcomingMovieBloc>(),
-                  //       child: const PopularMovieDetailPage(),
-                  //     ),
-                  //   ),
-                  // );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => MultiBlocProvider(
+                        providers: [
+                          BlocProvider.value(
+                            value: context.read<UpcomingMovieBloc>(),
+                          ),
+                          BlocProvider.value(
+                            value: context.read<SearchMovieBloc>(),
+                          ),
+                        ],
+                        child: const UpcomingMovieDetail(),
+                      ),
+                    ),
+                  );
                 },
                 child: const Text(
                   'See More',
