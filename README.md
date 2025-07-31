@@ -6,6 +6,9 @@ This is a submission for the Mobile Developer Assessment. It includes the follow
 
 This app is build using Flutter 3.13.9
 
+You can access through DIAWI if you only wanna try the app without installing (It Will Updated if there's any update from me too) : https://i.diawi.com/2Smcz9
+
+
 ## ✅ Features
 
 - 🚀 Splash Screen  
