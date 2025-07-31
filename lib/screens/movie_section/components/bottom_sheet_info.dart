@@ -90,23 +90,35 @@ class BottomSheetInfo {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton.icon(
-                          onPressed: () {
-                            final current = box.get('watchlist',
-                                defaultValue: <int>[]).cast<int>();
+                          // In your BottomSheetInfo.show method, replace the button's onPressed logic:
 
-                            if (current.contains(movie.id)) {
-                              current.remove(movie.id);
+                          onPressed: () {
+                            final box = Hive.box('watchlistBox');
+                            final currentIds = box.get('watchlist_ids',
+                                defaultValue: <int>[]).cast<int>();
+                            final currentMovies = box.get('watchlist_movies',
+                                defaultValue: <MovieItem>[]).cast<MovieItem>();
+
+                            if (currentIds.contains(movie.id)) {
+                              // Remove from watchlist
+                              currentIds.remove(movie.id);
+                              currentMovies
+                                  .removeWhere((m) => m.id == movie.id);
 
                               snackBarTrigger(
                                   context, 'Berhasil Menghapus WatchList');
                             } else {
-                              current.add(movie.id);
+                              // Add to watchlist
+                              currentIds.add(movie.id);
+                              currentMovies.add(movie);
+
                               snackBarTrigger(
                                   context, 'Berhasil Menambah WatchList');
                               Navigator.pop(context);
                             }
 
-                            box.put('watchlist', current);
+                            box.put('watchlist_ids', currentIds);
+                            box.put('watchlist_movies', currentMovies);
                             setState(() {});
                           },
                           icon: Icon(

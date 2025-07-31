@@ -60,6 +60,8 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const WatchlistSection(),
+              gapHeight(16),
               const PopularMovieList(),
               gapHeight(16),
               const TopRatedMovieList(),
@@ -67,8 +69,6 @@ class HomeScreen extends StatelessWidget {
               const NowShowingMovie(),
               gapHeight(16),
               const UpcomingMovieList(),
-              gapHeight(16),
-              const WatchlistSection(),
             ],
           ),
         ),
