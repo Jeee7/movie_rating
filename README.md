@@ -6,6 +6,9 @@ This is a submission for the Mobile Developer Assessment. It includes the follow
 
 This app is build using Flutter 3.13.9
 
+You can access through DIAWI if you only wanna try the app without installing (It Will Updated if there's any update from me too) : https://i.diawi.com/2Smcz9
+
+
 ## ✅ Features
 
 - 🚀 Splash Screen  
@@ -27,10 +30,10 @@ This app is build using Flutter 3.13.9
 
 1. Clone The Repository:
    git clone https://github.com/Jeee7/movie_rating.git
-   cd movie_rating
+   
 
-2. Get Depedencies
-   flutter pub get
+2. Mode to Directory and Get Depedencies using
+   **flutter pub get**
 
 3. Run the app
-   flutter run
+   **flutter run**
